@@ -14,13 +14,14 @@ import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.EditText
 import android.widget.ImageButton
+import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 
-class MainActivity : ComponentActivity() {
+class MainActivity : AppCompatActivity() {
 
     val database = Firebase.database("https://notesync-d4cef-default-rtdb.europe-west1.firebasedatabase.app/")
     val myRef = database.getReference("change")
@@ -59,6 +60,10 @@ class MainActivity : ComponentActivity() {
             }
         })
 
+    }
+    override fun onDestroy() {
+        super.onDestroy()
+        // activity is destroyed
     }
     private fun updateTextView( textView: TextView) {
         myRef.setValue(textView.text.toString()) }
