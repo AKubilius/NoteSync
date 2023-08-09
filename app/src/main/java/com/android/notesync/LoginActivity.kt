@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AlertDialog
 import com.android.notesync.databinding.ActivityLoginBinding
@@ -14,8 +15,19 @@ import com.google.android.material.textfield.TextInputLayout
 class LoginActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityLoginBinding
+
+
+    private val preferences: NotesPreferences by lazy {
+        NotesPreferences(this)
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        if (preferences.isLoggedIn()) {
+            startMainActivity()
+            finish()
+            return
+        }
 
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -49,6 +61,8 @@ class LoginActivity : AppCompatActivity() {
     private fun onLoginClicked() {
         val username: String = binding.textUsernameLayout.editText?.text.toString()
         val password: String = binding.textPasswordInput.editText?.text.toString()
+        Log.w("NAME", username)
+        Log.w("PASSWORD", password)
         if (username.isEmpty()) {
             binding.textUsernameLayout.error = "Username must not be empty"
         } else if (password.isEmpty()) {
@@ -67,12 +81,14 @@ class LoginActivity : AppCompatActivity() {
             .show()
     }
     private fun performLogin() {
+        preferences.setLoggedIn(true)
         binding.textUsernameLayout.isEnabled = false
         binding.textPasswordInput.isEnabled = false
         binding.loginButton.visibility = View.INVISIBLE
         binding.progressBar.visibility = View.VISIBLE
         Handler().postDelayed({
             startMainActivity()
+            finish()
         }, 2000)
     }
     private fun startMainActivity() {
