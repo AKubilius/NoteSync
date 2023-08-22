@@ -14,15 +14,16 @@ import com.google.android.material.textfield.TextInputLayout
 
 class LoginActivity : AppCompatActivity() {
 
+    // Binding and Preferences
     private lateinit var binding: ActivityLoginBinding
-
-
     private val preferences: NotesPreferences by lazy {
         NotesPreferences(this)
     }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        // Check if user is already logged in
         if (preferences.isLoggedIn()) {
             startMainActivity()
             finish()
@@ -32,24 +33,25 @@ class LoginActivity : AppCompatActivity() {
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        setupUIListeners()
+    }
+
+    // Set up UI listeners for the activity
+    private fun setupUIListeners() {
         binding.loginButton.setOnClickListener { onLoginClicked() }
 
-        binding.textUsernameLayout.editText
-            ?.addTextChangedListener(createTextWatcher(binding.textUsernameLayout))
-
-        binding.textPasswordInput.editText
-            ?.addTextChangedListener(createTextWatcher(binding.textPasswordInput))
-
+        val textWatcher = createTextWatcher()
+        binding.textUsernameLayout.editText?.addTextChangedListener(textWatcher)
+        binding.textPasswordInput.editText?.addTextChangedListener(textWatcher)
     }
-    private fun createTextWatcher(textPasswordInput: TextInputLayout): TextWatcher? {
+
+    private fun createTextWatcher(): TextWatcher {
         return object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence,
-                                           start: Int, count: Int, after: Int) {
+            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
                 // not needed
             }
 
-            override fun onTextChanged(s: CharSequence,
-                                       start: Int, before: Int, count: Int) {
+            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
                 binding.textPasswordInput.error = null
             }
 
@@ -58,41 +60,57 @@ class LoginActivity : AppCompatActivity() {
             }
         }
     }
+
     private fun onLoginClicked() {
         val username: String = binding.textUsernameLayout.editText?.text.toString()
         val password: String = binding.textPasswordInput.editText?.text.toString()
         Log.w("NAME", username)
         Log.w("PASSWORD", password)
-        if (username.isEmpty()) {
-            binding.textUsernameLayout.error = "Username must not be empty"
-        } else if (password.isEmpty()) {
-            binding.textPasswordInput.error = "Password must not be empty"
-        }else if (username != "admin" && password != "admin") {
-            showErrorDialog()
-        } else {
-            performLogin()
+
+        when {
+            username.isEmpty() -> binding.textUsernameLayout.error = "Username must not be empty"
+            password.isEmpty() -> binding.textPasswordInput.error = "Password must not be empty"
+            username != "admin" || password != "admin" -> showErrorDialog()
+            else -> performLogin(username)
         }
     }
+
     private fun showErrorDialog() {
         AlertDialog.Builder(this)
             .setTitle("Login Failed")
             .setMessage("Username or password is not correct. Please try again.")
-            .setPositiveButton("OK") { dialog, which -> dialog.dismiss() }
+            .setPositiveButton("OK") { dialog, _ -> dialog.dismiss() }
             .show()
     }
-    private fun performLogin() {
+
+    private fun performLogin(username: String) {
         preferences.setLoggedIn(true)
-        binding.textUsernameLayout.isEnabled = false
-        binding.textPasswordInput.isEnabled = false
-        binding.loginButton.visibility = View.INVISIBLE
-        binding.progressBar.visibility = View.VISIBLE
+        preferences.setUsername(username)
+        showLoadingState()
+
         Handler().postDelayed({
             startMainActivity()
             finish()
         }, 2000)
     }
+
+    // Update UI for loading state
+    private fun showLoadingState() {
+        binding.textUsernameLayout.isEnabled = false
+        binding.textPasswordInput.isEnabled = false
+        binding.loginButton.visibility = View.INVISIBLE
+        binding.progressBar.visibility = View.VISIBLE
+    }
+
     private fun startMainActivity() {
         val intent = Intent(this, MainActivity::class.java)
         startActivity(intent)
     }
 }
+
+
+
+
+
+
+
