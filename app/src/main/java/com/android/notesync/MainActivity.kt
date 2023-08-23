@@ -19,6 +19,7 @@ import android.widget.ImageButton
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
@@ -29,6 +30,7 @@ class MainActivity : AppCompatActivity() {
     private val database = Firebase.database("https://notesync-d4cef-default-rtdb.europe-west1.firebasedatabase.app/")
     private val myRef = database.getReference("change")
 
+    private lateinit var db: DatabaseReference
     // Local storage for user preferences
     private lateinit var preferences: NotesPreferences
 
@@ -41,20 +43,40 @@ class MainActivity : AppCompatActivity() {
 
         setupUsernameDisplay()
         setupTextView()
-        setupAddButton()
+       // setupAddButton()
         setupBackButton()
         setupDatabaseListener()
+        setupMyButton()
+        initializeDbRef()
     }
 
-
-    private fun setupUsernameDisplay() {
-        val loginName= preferences.getUsername()
-        // With else
-        if (loginName != null) {
-            Log.w("NAME", loginName)
-        } else {
-            Log.w("NAME", "Nullis")
+    fun initializeDbRef() {
+        db = Firebase.database.reference
+        db.child("Notes").child("Notes1").get().addOnSuccessListener {
+            Log.i("firebase", "Got value ${it.value}")
+        }.addOnFailureListener{
+            Log.e("firebase", "Error getting data", it)
         }
+    }
+    private fun setupUsernameDisplay() {
+
+    }
+
+    private fun setupNotes() {
+        val loginName= preferences.getUsername()
+
+    }
+
+    private fun setupMyButton() {
+        val myButton:Button = findViewById(R.id.myButton)
+        myButton.setOnClickListener{
+            startButtonActivity()
+        }
+    }
+
+    private fun updateMyButton(value:String) {
+       val myButton:Button = findViewById(R.id.myButton)
+        myButton.text = value;
     }
 
     // Set up the main text view where data is displayed and saved
@@ -69,27 +91,31 @@ class MainActivity : AppCompatActivity() {
     }
 
     // Set up button for adding new EditText views
-    private fun setupAddButton() {
-        val containerLayout: LinearLayout = findViewById(R.id.containerLayout)
-        val addButton: ImageButton = findViewById(R.id.buttonAdd)
-        val editTextManager = EditTextManager(this)
-        addButton.setOnClickListener {
-            editTextManager.addNewEditText(containerLayout)
-        }
-    }
-
+//    private fun setupAddButton() {
+//        val containerLayout: LinearLayout = findViewById(R.id.containerLayout)
+//        val addButton: ImageButton = findViewById(R.id.buttonAdd)
+//        val editTextManager = EditTextManager(this)
+//        addButton.setOnClickListener {
+//            editTextManager.addNewEditText(containerLayout)
+//        }
+//    }
 
     private fun setupBackButton()
     {
         val backButton:Button = findViewById(R.id.buttonBack)
         backButton.setOnClickListener{
             preferences.setLoggedOff(false)
-            startMainActivity()
+            startLoginActivity()
         }
     }
 
-    private fun startMainActivity() {
+    private fun startLoginActivity() {
         val intent = Intent(this, LoginActivity::class.java)
+        startActivity(intent)
+    }
+
+    private fun startButtonActivity() {
+        val intent = Intent(this, ButtonActivity::class.java)
         startActivity(intent)
     }
 
@@ -99,6 +125,7 @@ class MainActivity : AppCompatActivity() {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val value = snapshot.getValue(String::class.java) ?: ""
                 updateMainText(value)
+                updateMyButton(value)
             }
 
             override fun onCancelled(error: DatabaseError) {
