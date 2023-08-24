@@ -16,8 +16,10 @@
         android:hint="Click Me"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.466"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.44" />
 
     <EditText
         android:id="@+id/textView"
@@ -57,6 +59,17 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.974"
         app:srcCompat="@drawable/add" />
+
+    <LinearLayout
+        android:id="@+id/notes"
+        android:layout_width="409dp"
+        android:layout_height="206dp"
+        android:layout_marginTop="16dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toTopOf="@+id/buttonAdd"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/myButton"></LinearLayout>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

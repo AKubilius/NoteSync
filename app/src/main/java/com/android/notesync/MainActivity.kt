@@ -11,6 +11,7 @@ import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.util.Log
 import android.view.Gravity
+import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.Button
 import android.widget.LinearLayout
@@ -20,6 +21,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
@@ -31,6 +33,7 @@ class MainActivity : AppCompatActivity() {
     private val myRef = database.getReference("change")
 
     private lateinit var db: DatabaseReference
+
     // Local storage for user preferences
     private lateinit var preferences: NotesPreferences
 
@@ -39,6 +42,8 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.main_activity)
 
         // Initialize preferences
+
+
         preferences = NotesPreferences(this)
 
         setupUsernameDisplay()
@@ -48,6 +53,39 @@ class MainActivity : AppCompatActivity() {
         setupDatabaseListener()
         setupMyButton()
         initializeDbRef()
+        database()
+    }
+
+    fun database(){
+        val layoutNotes:LinearLayout = findViewById(R.id.notes)
+        val ref = FirebaseDatabase.getInstance().reference.child("Notes")
+        ref.addListenerForSingleValueEvent(
+            object : ValueEventListener {
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    val value = dataSnapshot.value
+                    if (value is Map<*, *>) {
+                        for ((key, data) in value) {
+                            Log.w("DataSnapShot", "Key: $key, Value: $data")
+                            createNoteButton(layoutNotes, data)
+
+                        }
+                    } else {
+                        Log.w("DataSnapShot", "Value is not a Map: $value")
+                    }
+                }
+                override fun onCancelled(databaseError: DatabaseError) {
+                    // Handle databaseError
+                }
+            })
+    }
+
+    fun createNoteButton(layoutNotes:LinearLayout, text:Any?){
+
+        val button_dynamic = Button(this)
+        button_dynamic.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+        button_dynamic.text = text.toString()
+        layoutNotes.addView(button_dynamic)
+
     }
 
     fun initializeDbRef() {
