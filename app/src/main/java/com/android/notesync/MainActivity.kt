@@ -46,12 +46,12 @@ class MainActivity : AppCompatActivity() {
 
         preferences = NotesPreferences(this)
 
-        setupUsernameDisplay()
-        setupTextView()
-       // setupAddButton()
+        // setupUsernameDisplay()
+
+        // setupAddButton()
         setupBackButton()
-        setupDatabaseListener()
-        setupMyButton()
+
+        // setupMyButton()
         initializeDbRef()
         database()
     }
@@ -66,7 +66,7 @@ class MainActivity : AppCompatActivity() {
                     if (value is Map<*, *>) {
                         for ((key, data) in value) {
                             Log.w("DataSnapShot", "Key: $key, Value: $data")
-                            createNoteButton(layoutNotes, data)
+                            createNoteButton(layoutNotes,key,data)
 
                         }
                     } else {
@@ -79,12 +79,16 @@ class MainActivity : AppCompatActivity() {
             })
     }
 
-    fun createNoteButton(layoutNotes:LinearLayout, text:Any?){
+    fun createNoteButton(layoutNotes:LinearLayout, key:Any?, text:Any?){
 
         val button_dynamic = Button(this)
+
         button_dynamic.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
         button_dynamic.text = text.toString()
         layoutNotes.addView(button_dynamic)
+        button_dynamic.setOnClickListener{
+            startButtonActivity(key.toString())
+        }
 
     }
 
@@ -96,37 +100,18 @@ class MainActivity : AppCompatActivity() {
             Log.e("firebase", "Error getting data", it)
         }
     }
-    private fun setupUsernameDisplay() {
 
-    }
 
-    private fun setupNotes() {
-        val loginName= preferences.getUsername()
+//    private fun setupMyButton() {
+//        val myButton:Button = findViewById(R.id.myButton)
+//        myButton.setOnClickListener{
+//            startButtonActivity()
+//        }
+//    }
 
-    }
 
-    private fun setupMyButton() {
-        val myButton:Button = findViewById(R.id.myButton)
-        myButton.setOnClickListener{
-            startButtonActivity()
-        }
-    }
 
-    private fun updateMyButton(value:String) {
-       val myButton:Button = findViewById(R.id.myButton)
-        myButton.text = value;
-    }
 
-    // Set up the main text view where data is displayed and saved
-    private fun setupTextView() {
-        val textView: EditText = findViewById(R.id.textView)
-        textView.setOnEditorActionListener { _, actionId, _ ->
-            if (actionId == EditorInfo.IME_ACTION_DONE) {
-                saveTextToDatabase(textView.text.toString())
-                true
-            } else false
-        }
-    }
 
     // Set up button for adding new EditText views
 //    private fun setupAddButton() {
@@ -152,34 +137,13 @@ class MainActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
-    private fun startButtonActivity() {
+    private fun startButtonActivity(noteId:String) {
         val intent = Intent(this, ButtonActivity::class.java)
+        intent.putExtra("Id", noteId)
         startActivity(intent)
     }
 
-    // Set up listener to update text when data changes in Firebase
-    private fun setupDatabaseListener() {
-        myRef.addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                val value = snapshot.getValue(String::class.java) ?: ""
-                updateMainText(value)
-                updateMyButton(value)
-            }
 
-            override fun onCancelled(error: DatabaseError) {
-                // Handle error here
-
-            }
-        })
-    }
-    private fun saveTextToDatabase(text: String) {
-        myRef.setValue(text)
-    }
-
-    private fun updateMainText(value: String) {
-        val textView: TextView = findViewById(R.id.textView)
-        textView.text = value
-    }
 }
 class EditTextManager(private val context: Context) {
 
