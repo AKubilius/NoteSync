@@ -17,7 +17,12 @@ import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.EditText
 import android.widget.ImageButton
+import android.widget.Toolbar
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
+import androidx.core.view.marginLeft
+import androidx.core.view.setMargins
+import com.google.android.material.appbar.MaterialToolbar
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
@@ -41,21 +46,21 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.main_activity)
 
-        // Initialize preferences
-
-
         preferences = NotesPreferences(this)
 
-        // setupUsernameDisplay()
-
-        // setupAddButton()
-        setupBackButton()
-
-        // setupMyButton()
+        setupNavigation()
         initializeDbRef()
         database()
     }
 
+    fun setupNavigation()
+    {
+        val topAppBar: MaterialToolbar = findViewById(R.id.topAppBar)
+        setSupportActionBar(topAppBar)
+        topAppBar.setNavigationOnClickListener {
+            onBackPressedDispatcher.onBackPressed()
+        }
+    }
     fun database(){
         val layoutNotes:LinearLayout = findViewById(R.id.notes)
         val ref = FirebaseDatabase.getInstance().reference.child("Notes")
@@ -78,57 +83,30 @@ class MainActivity : AppCompatActivity() {
                 }
             })
     }
-
     fun createNoteButton(layoutNotes:LinearLayout, key:Any?, text:Any?){
 
-        val button_dynamic = Button(this)
+        val noteButton = Button(this)
 
-        button_dynamic.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
-        button_dynamic.text = text.toString()
-        layoutNotes.addView(button_dynamic)
-        button_dynamic.setOnClickListener{
+        var params =  LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+        params.setMargins(0,10,20,30)
+
+        noteButton.layoutParams = params;
+        noteButton.text = text.toString()
+
+        noteButton.setBackgroundColor(ContextCompat.getColor(this, R.color.blue700))
+
+        layoutNotes.addView(noteButton)
+        noteButton.setOnClickListener{
             startButtonActivity(key.toString())
         }
 
     }
-
     fun initializeDbRef() {
         db = Firebase.database.reference
         db.child("Notes").child("Notes1").get().addOnSuccessListener {
             Log.i("firebase", "Got value ${it.value}")
         }.addOnFailureListener{
             Log.e("firebase", "Error getting data", it)
-        }
-    }
-
-
-//    private fun setupMyButton() {
-//        val myButton:Button = findViewById(R.id.myButton)
-//        myButton.setOnClickListener{
-//            startButtonActivity()
-//        }
-//    }
-
-
-
-
-
-    // Set up button for adding new EditText views
-//    private fun setupAddButton() {
-//        val containerLayout: LinearLayout = findViewById(R.id.containerLayout)
-//        val addButton: ImageButton = findViewById(R.id.buttonAdd)
-//        val editTextManager = EditTextManager(this)
-//        addButton.setOnClickListener {
-//            editTextManager.addNewEditText(containerLayout)
-//        }
-//    }
-
-    private fun setupBackButton()
-    {
-        val backButton:Button = findViewById(R.id.buttonBack)
-        backButton.setOnClickListener{
-            preferences.setLoggedOff(false)
-            startLoginActivity()
         }
     }
 
@@ -142,7 +120,6 @@ class MainActivity : AppCompatActivity() {
         intent.putExtra("Id", noteId)
         startActivity(intent)
     }
-
 
 }
 class EditTextManager(private val context: Context) {

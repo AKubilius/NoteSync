@@ -1,4 +1,12 @@
 <resources>
     <string name="app_name">NoteSync</string>
     <string name="title_activity_note_screen">NoteScreen</string>
+    <string name="page_title">NoteSync</string>
+    <string name="edit">Edit</string>
+    <string name="favorite">Favorite</string>
+    <string name="more">More</string>
+    <string name="content_description_search">Search</string>
+    <string name="content_description_favorite">Favorite</string>
+    <string name="content_description_more">More</string>
+    <string name="page_subtitle">Sarasas</string>
 </resources>

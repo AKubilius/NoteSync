@@ -7,11 +7,12 @@
     tools:context=".ButtonActivity">
 
 
-    <Button
-        android:id="@+id/buttonBack"
-        android:layout_width="118dp"
-        android:layout_height="56dp"
-        android:text="BACK"
+    <include
+        android:id="@+id/include"
+        layout="@layout/activity_top_bar"
+        android:layout_width="379dp"
+        android:layout_height="67dp"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -23,7 +24,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/buttonBack">
+        app:layout_constraintTop_toBottomOf="@id/include">
 
         <EditText
             android:id="@+id/editText"
@@ -32,7 +33,6 @@
             android:gravity="top|start"
             android:hint="Start typing here..."
             android:inputType="textMultiLine" />
-
 
     </ScrollView>
 
