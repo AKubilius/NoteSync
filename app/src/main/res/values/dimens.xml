@@ -5,4 +5,5 @@
     <dimen name="margin_left">4dp</dimen>
     <dimen name="margin_right">4dp</dimen>
     <dimen name="elevation">4dp</dimen>
+    <dimen name="your_corner_radius">16dp</dimen>
 </resources>

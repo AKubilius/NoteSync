@@ -10,4 +10,13 @@
     <color name="blue700">#344955</color>
     <color name="blue800">#232F34</color>
     <color name="orange500">#F9AA33</color>
+    <color name="primary30">#EADDFF</color>
+    <color name="primary80">#6750A4</color>
+    <color name="onprimary80">#21005E</color>
+    <color name="secondary30">#E8DEF8</color>
+    <color name="COMPLEMENTARY300">#aaf255</color>
+    <color name="COMPLEMENTARY200">#c6f68d</color>
+    <color name="COMPLEMENTARY100">#defabb</color>
+
+
 </resources>

@@ -40,6 +40,9 @@ class ButtonActivity (): AppCompatActivity() {
         initializeDbRef()
     }
 
+
+
+
     fun initializeDbRef() {
         db = Firebase.database.reference
         val textView: EditText = findViewById(R.id.editText)
